@@ -86,3 +86,29 @@ def deserialize_s32(buf : bytes, offset : int):
 	return s32(value), offset + 4
 # -----------------------
 
+# bool
+# -----------------------
+# Serializer
+@register_serializer(bool)
+def serialize_bool(buf : bytearray, value : bool):
+    buf.append(1 if value else 0)
+# Deserializer
+@register_deserializer(bool)
+def deserialize_bool(buf : bytes, offset : int):
+    return buf[offset] == 1, offset + 1
+
+# str
+# -----------------------
+# Serializer
+@register_serializer(str)
+def serialize_str(buf : bytearray, value : str):
+    serialize(buf, u32(len(value)))
+    encoded = value.encode("utf-8")
+    buf += encoded
+# Deserializer
+@register_deserializer(str)
+def deserialize_str(buf : bytes, offset : int):
+    length, offset = deserialize(buf, u32, offset)
+    s = buf[offset:offset+length].decode("utf-8")
+    offset += length
+    return s, offset
