@@ -8,9 +8,11 @@ namespace RPCAPI
 	bool RPCAPIServer::serveRequest(RPCAPIChannel& ch)
 	{
 		u32 procNameLen;
-		ch.receive(reinterpret_cast<u8*>(&procNameLen), sizeof(u32));
+		if(!ch.receive(reinterpret_cast<u8*>(&procNameLen), sizeof(u32)))
+			return false;
 		std::vector<char> procNameChars(procNameLen);
-		ch.receive(reinterpret_cast<u8*>(procNameChars.data()), procNameLen);
+		if(!ch.receive(reinterpret_cast<u8*>(procNameChars.data()), procNameLen))
+			return false;
 		procNameChars.push_back('\0');
 		std::string_view procName { procNameChars.data(), procNameChars.size() - 1 };
 		// com_debug_log_info("server: received proc name: %s", procName.data());
@@ -22,12 +24,15 @@ namespace RPCAPI
 		}
 		auto& bHandler = it->second;
 		u32 argsLen;
-		ch.receive(reinterpret_cast<u8*>(&argsLen), sizeof(u32));
+		if(!ch.receive(reinterpret_cast<u8*>(&argsLen), sizeof(u32)))
+			return false;
 		std::vector<u8> bytes(argsLen);
-		ch.receive(bytes.data(), argsLen);
+		if(!ch.receive(bytes.data(), argsLen))
+			return false;
 		std::vector<u8> retBytes;
 		bHandler(bytes.data(), static_cast<u32>(bytes.size()), retBytes);
-		ch.send(retBytes.data(), retBytes.size());
+		if(!ch.send(retBytes.data(), retBytes.size()))
+			return false;
 
 		return true;
 	}

@@ -9,5 +9,7 @@ namespace RPCAPI
 	public:
 		virtual bool send(const u8* bytes, u32 length) = 0;
 		virtual bool receive(u8* const bytes, u32 length) = 0;
+
+		virtual ~RPCAPIChannel() = default;
 	};
 }

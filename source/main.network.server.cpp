@@ -24,6 +24,7 @@ public:
 		result = m_listenSocket.listen();
 		if(result != netsocket::Result::Success)
 			return false;
+		return true;
 	}
 
 	bool acceptConnection()
