@@ -31,6 +31,9 @@ namespace RPCAPI
 			return false;
 		std::vector<u8> retBytes;
 		bHandler(bytes.data(), static_cast<u32>(bytes.size()), retBytes);
+		u32 retBytesLen = static_cast<u32>(retBytes.size());
+		if(!ch.send(reinterpret_cast<u8*>(&retBytesLen), sizeof(u32)))
+			return false;
 		if(!ch.send(retBytes.data(), retBytes.size()))
 			return false;
 
