@@ -1,6 +1,13 @@
 # RPCAPI
 Tiny and simple remote procedure call library.
 
+## Building and installing
+```
+build_master meson setup build --buildtype=release
+build_master meson compile -C build
+build_master meson install -C build
+```
+
 ## Usage 
 ### Writing API Server code
 **Full server code example**: https://github.com/ravi688/RPCAPI/blob/main/source/main.network.server.cpp
@@ -209,3 +216,5 @@ int main(int argc, const char** argv)
 	return 0;
 }
 ```
+## License
+MIT
