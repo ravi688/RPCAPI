@@ -2,6 +2,8 @@
 #include <RPCAPI/RPCAPIClient.hpp>
 #include <RPCAPI/MockRPCChannel.hpp>
 
+#include <thread>
+
 int main(int argc, const char** argv)
 {
 	using SecreteCode = RPCAPI::SecreteCode;
@@ -27,10 +29,15 @@ int main(int argc, const char** argv)
 	});
 
 	RPCAPI::BidirectionalChannel ch;
-	std::thread serverThread([&ch, &apiServer]()
+	std::atomic<bool> isServerStop = false;
+	std::thread serverThread([&ch, &apiServer, &isServerStop]()
 	{
 		auto mkCh = ch.getEndPoint1();
-		apiServer.run(mkCh);
+		while(!isServerStop)
+		{
+			apiServer.serveRequest(mkCh);
+			std::this_thread::sleep_for(std::chrono::duration<float, std::ratio<1, 1>>(1));
+		}
 	});
 
 	auto mkCh = ch.getEndPoint2();
@@ -62,6 +69,7 @@ int main(int argc, const char** argv)
 	});
 
 	clientThread.join();
+	isServerStop = true;
 	serverThread.join();
 
 	return 0;

@@ -33,6 +33,26 @@
             "sources": [
                 "source/main.cpp"
             ]
+        },
+        {
+            "name" : "TestRPCAPIServer",
+            "is_executable" : true,
+            "dependencies" : [ "netsocket" ],
+            "link_with" : [ "rpcapi_static" ],
+            "windows_link_args" : [ "-lws2_32" ],
+            "sources" : [
+                "source/main.network.server.cpp"
+            ]
+        },
+        {
+            "name" : "TestRPCAPIClient",
+            "is_executable" : true,
+            "dependencies" : [ "netsocket" ],
+            "link_with" : [ "rpcapi_static" ],
+            "windows_link_args" : [ "-lws2_32" ],
+            "sources" : [
+                "source/main.network.client.cpp"
+            ]
         }
     ],
     "vars" :

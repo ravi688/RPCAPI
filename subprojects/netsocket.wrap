@@ -1,0 +1,7 @@
+[wrap-git]
+url = https://github.com/ravi688/NetSocket.git
+revision = head
+depth = 1
+
+[provide]
+netsocket = netsocket_static_dep
