@@ -30,7 +30,9 @@ namespace RPCAPI
 			m_ch.send(bytes.data(), bytes.size());
 			// com_debug_log_info("client: Call to %s is sent", procName.data());
 			// com_debug_log_info("client: waiting for the return value");
-			std::vector<u8> receiveBytes(sizeof(ReturnType));
+			u32 retLen;
+			m_ch.receive(reinterpret_cast<u8*>(&retLen), sizeof(u32));
+			std::vector<u8> receiveBytes(retLen);
 			m_ch.receive(receiveBytes.data(), receiveBytes.size());
 			u32 offset = 0;
 			auto res = Deserialize<ReturnType>{} (receiveBytes.data(), offset);
