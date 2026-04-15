@@ -339,6 +339,82 @@ rpcapi_static
 	gnu_symbol_visibility: 'hidden'
 )
 
+# -------------- Target: TestRPCAPIServer ------------------
+TestRPCAPIServer_sources_bm_internal__ = [
+'source/main.network.server.cpp'
+]
+TestRPCAPIServer_include_dirs_bm_internal__ = [
+
+]
+TestRPCAPIServer_dependencies_bm_internal__ = [
+dependency('netsocket')
+]
+TestRPCAPIServer_link_args_bm_internal__ = {
+'windows' : ['-lws2_32'],
+'linux' : [],
+'darwin' : []
+}
+TestRPCAPIServer_platform_src_bm_internal__ = {
+'windows' : [],
+'linux' : [],
+'darwin' : []
+}
+TestRPCAPIServer_defines_bm_internal__ = [
+
+]
+TestRPCAPIServer = executable('TestRPCAPIServer',
+	TestRPCAPIServer_sources_bm_internal__ + TestRPCAPIServer_platform_src_bm_internal__[host_machine.system()] + sources_bm_internal__,
+	dependencies: dependencies_bm_internal__ + TestRPCAPIServer_dependencies_bm_internal__,
+	include_directories: [inc_bm_internal__, TestRPCAPIServer_include_dirs_bm_internal__],
+	install: false,
+	c_args: TestRPCAPIServer_defines_bm_internal__ + project_build_mode_defines_bm_internal__,
+	cpp_args: TestRPCAPIServer_defines_bm_internal__ + project_build_mode_defines_bm_internal__, 
+	link_args: TestRPCAPIServer_link_args_bm_internal__[host_machine.system()], 
+	link_with: [
+rpcapi_static
+]
+,
+	gnu_symbol_visibility: 'hidden'
+)
+
+# -------------- Target: TestRPCAPIClient ------------------
+TestRPCAPIClient_sources_bm_internal__ = [
+'source/main.network.client.cpp'
+]
+TestRPCAPIClient_include_dirs_bm_internal__ = [
+
+]
+TestRPCAPIClient_dependencies_bm_internal__ = [
+dependency('netsocket')
+]
+TestRPCAPIClient_link_args_bm_internal__ = {
+'windows' : ['-lws2_32'],
+'linux' : [],
+'darwin' : []
+}
+TestRPCAPIClient_platform_src_bm_internal__ = {
+'windows' : [],
+'linux' : [],
+'darwin' : []
+}
+TestRPCAPIClient_defines_bm_internal__ = [
+
+]
+TestRPCAPIClient = executable('TestRPCAPIClient',
+	TestRPCAPIClient_sources_bm_internal__ + TestRPCAPIClient_platform_src_bm_internal__[host_machine.system()] + sources_bm_internal__,
+	dependencies: dependencies_bm_internal__ + TestRPCAPIClient_dependencies_bm_internal__,
+	include_directories: [inc_bm_internal__, TestRPCAPIClient_include_dirs_bm_internal__],
+	install: false,
+	c_args: TestRPCAPIClient_defines_bm_internal__ + project_build_mode_defines_bm_internal__,
+	cpp_args: TestRPCAPIClient_defines_bm_internal__ + project_build_mode_defines_bm_internal__, 
+	link_args: TestRPCAPIClient_link_args_bm_internal__[host_machine.system()], 
+	link_with: [
+rpcapi_static
+]
+,
+	gnu_symbol_visibility: 'hidden'
+)
+
 
 #-------------------------------------------------------------------------------
 #--------------------------------Header Intallation----------------------------------

@@ -31,6 +31,8 @@ namespace RPCAPI
 			m_api.insert({ std::string { procName }, std::move(byteHandler) });
 		}
 	
-		void run(RPCAPIChannel& ch);
+		// Returns false if an invalid API call has been received, otherwise exits with true.
+		// This function should be called in a while loop to keep on serving requests.
+		bool serveRequest(RPCAPIChannel& ch);
 	};
 }
