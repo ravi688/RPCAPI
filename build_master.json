@@ -1,0 +1,44 @@
+{
+    "project_name": "RPCAPI",
+    "canonical_name": "rpcapi",
+    "dependencies" : [ "common" ],
+    "include_dirs": "include",
+    "release_defines": [
+        "-DRPCAPI_RELEASE"
+    ],
+    "debug_defines": [
+        "-DRPCAPI_DEBUG"
+    ],
+    "targets": [
+       {
+            "name" : "rpcapi_static",
+            "is_static_library" : true,
+            "is_install" : true,
+            "build_defines" : [ "-DRPCAPI_BUILD_STATIC_LIBRARY" ],
+            "use_defines" : [ "-DRPCAPI_USE_STATIC_LIBRARY" ],
+            "sources" : [ "$sources" ]
+        },
+        {
+            "name" : "rpcapi_shared",
+            "is_shared_library" : true,
+            "is_install" : true,
+            "build_defines" : [ "-DRPCAPI_BUILD_SHARED_LIBRARY" ],
+            "use_defines" : [ "-DRPCAPI_USE_SHARED_LIBRARY" ],
+            "sources" : [ "$sources" ]
+        },
+        {
+            "name": "RPCAPI",
+            "is_executable": true,
+            "link_with" : [ "rpcapi_static" ],
+            "sources": [
+                "source/main.cpp"
+            ]
+        }
+    ],
+    "vars" :
+    {
+        "sources" : [
+            "source/RPCAPIServer.cpp"
+        ]
+    }
+}
