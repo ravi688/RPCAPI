@@ -1,5 +1,7 @@
 # RPCAPI
 Tiny and simple remote procedure call library. Works on Linux and Windows both.
+> [!WARNING]
+> This library doesn't implement encryption, so all the communication between the server and the clients happen in plain-text. If you wish to add encryption, then you can do that by adding the encyrption/decryption feature in the communication channel by deriving from `RPCAPIChannel` interface.
 ## Building and installing
 ```
 build_master meson setup build --buildtype=release
