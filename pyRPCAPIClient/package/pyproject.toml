@@ -1,0 +1,10 @@
+[project]
+name = "pyRPCAPIClient"
+version = "1.0.0"
+description = "RPCAPI Client for python"
+authors = [{name="Ravi"}]
+dependencies = []
+
+[build-system]
+requires = [ "setuptools" ]
+build-backend = "setuptools.build_meta"
