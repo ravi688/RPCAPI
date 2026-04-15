@@ -1,5 +1,5 @@
 # RPCAPI
-Tiny and simple remote procedure call library.
+Tiny and simple remote procedure call library. Works on Linux and Windows both.
 
 ## Building and installing
 ```
