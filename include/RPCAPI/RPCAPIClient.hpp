@@ -35,7 +35,7 @@ namespace RPCAPI
 			std::vector<u8> receiveBytes(retLen);
 			m_ch.receive(receiveBytes.data(), receiveBytes.size());
 			u32 offset = 0;
-			auto res = Deserialize<ReturnType>{} (receiveBytes.data(), offset);
+			auto res = Deserialize<ReturnType>{} (receiveBytes.data(), offset, receiveBytes.size());
 			return res;
 		}
 	};

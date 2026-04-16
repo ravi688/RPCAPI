@@ -39,7 +39,20 @@ namespace RPCAPI
 		if(!ch.receive(bytes.data(), argsLen))
 			return false;
 		std::vector<u8> retBytes;
-		bHandler(bytes.data(), static_cast<u32>(bytes.size()), retBytes);
+		try
+		{
+			bHandler(bytes.data(), static_cast<u32>(bytes.size()), retBytes);
+		}
+		catch(const std::exception& e)
+		{
+			com_debug_log_error("Caught: %s", e.what());
+			return false;
+		}
+		catch(...)
+		{
+			com_debug_log_error("Caught unknown exception");
+			return false;
+		}
 		u32 retBytesLen = static_cast<u32>(retBytes.size());
 		if(!ch.send(reinterpret_cast<u8*>(&retBytesLen), sizeof(u32)))
 			return false;
