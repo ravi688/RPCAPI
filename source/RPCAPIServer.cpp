@@ -3,6 +3,10 @@
 
 #include <common/debug.h>
 
+// For security reasons, we should always clamp the valid procedure name length to a fixed value, 
+// so that a malicious client won't be able to send large proc name.
+static constexpr u32 gMaxProcNameLen = 30;
+
 namespace RPCAPI
 {
 	bool RPCAPIServer::serveRequest(RPCAPIChannel& ch)
@@ -10,12 +14,17 @@ namespace RPCAPI
 		u32 procNameLen;
 		if(!ch.receive(reinterpret_cast<u8*>(&procNameLen), sizeof(u32)))
 			return false;
+		// procedure name length can't be greater than max allowed length
+		if(procNameLen > gMaxProcNameLen)
+		{
+			com_debug_log_error("ProcName length (%u) exceeds the max allowed length", procNameLen);
+			return false;
+		}
 		std::vector<char> procNameChars(procNameLen);
 		if(!ch.receive(reinterpret_cast<u8*>(procNameChars.data()), procNameLen))
 			return false;
 		procNameChars.push_back('\0');
 		std::string_view procName { procNameChars.data(), procNameChars.size() - 1 };
-		// com_debug_log_info("server: received proc name: %s", procName.data());
 		auto it = m_api.find(procName);
 		if(it == m_api.end())
 		{
