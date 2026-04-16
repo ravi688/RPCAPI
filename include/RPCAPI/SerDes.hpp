@@ -83,6 +83,18 @@ namespace RPCAPI
 		}
 	};
 
+	template<>
+	struct Deserialize<std::string>
+	{
+		std::string operator()(const u8* data, u32& offset, u32 length)
+		{
+			u32 size = Deserialize<u32> {}(data, offset, length);
+			IncrementOffsetOnExit _(offset, sizeof(u8) * size, length);
+			auto str = std::string { std::string_view { reinterpret_cast<const char*>(data + offset), size } };
+			return str;
+		}
+	};
+
 	template<typename... Args, std::size_t... I>
 	auto DeserializeArgsImpl(const u8* data, u32 length, std::index_sequence<I...>)
 	{
@@ -149,9 +161,22 @@ namespace RPCAPI
 		}
 	};
 
-	template<typename... Args>
-	void SerializeArgs(std::vector<u8>& bytes, Args&&... args)
+	template<>
+	struct Serialize<std::string>
 	{
-		(Serialize<Args>{} (bytes, std::forward<Args>(args)), ...);
+		void operator()(std::vector<u8>& bytes, const std::string& s)
+		{
+			Serialize<u32> {}(bytes, s.size());
+			bytes.resize(bytes.size() + s.size());
+			auto* dstPtr = &bytes[bytes.size() - s.size()];
+			auto* srcPtr = s.data();
+			std::memcpy(dstPtr, srcPtr, s.size());
+		}
+	};	
+
+	template<typename... Args>
+	void SerializeArgs(std::vector<u8>& bytes, const Args&... args)
+	{
+		(Serialize<Args>{} (bytes, args), ...);
 	}
 }

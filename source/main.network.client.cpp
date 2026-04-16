@@ -49,6 +49,13 @@ int main(int argc, const char** argv)
 	// Run a client thread which issues API requests and receives response.
 	std::thread clientThread([&apiClient]()
 	{
+		std::string inS = "hello World";
+		auto res = apiClient.call<std::string, std::string>("echo", inS);
+		if(res)
+			com_debug_log_info("client: echo, received, %s", res.value().c_str());
+		else
+			com_debug_log_error("client: echo, something went wrong");
+
 		std::optional<u32> value = apiClient.call<u32>("get-kvm-port-count");
 		if(value)
 			com_debug_log_info("client: get-kvm-port-count, received %u", *value);

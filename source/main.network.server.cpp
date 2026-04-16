@@ -11,6 +11,10 @@ int main(int argc, const char** argv)
 	RPCAPI::RPCAPIServer apiServer;
 
 	// Define the API handlers
+	apiServer.define<std::string, std::string>("echo", [](const std::string& str)
+	{
+		return str;
+	});
 	apiServer.define<u32>(std::string_view { "get-kvm-port-count" }, []() -> u32
 	{
 		com_debug_log_info("server: get-kvm-port-count: sending 8");

@@ -19,10 +19,10 @@ namespace RPCAPI
 		RPCAPIClient(RPCAPIChannel& ch) : m_ch(ch) { }
 	
 		template<typename ReturnType, typename... ProcArgs>
-		std::optional<ReturnType> call(std::string_view procName, ProcArgs&&... args)
+		std::optional<ReturnType> call(std::string_view procName, const ProcArgs&... args)
 		{
 			std::vector<u8> bytes;
-			SerializeArgs<ProcArgs...>(bytes, std::forward<ProcArgs>(args)...);
+			SerializeArgs<ProcArgs...>(bytes, args...);
 			u32 procNameLen = static_cast<u32>(procName.size());
 			if(!m_ch.send(reinterpret_cast<u8*>(&procNameLen), sizeof(u32)))
 				return { };
