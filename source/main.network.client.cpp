@@ -1,6 +1,5 @@
 #include <RPCAPI/RPCAPIClient.hpp>
-#include <RPCAPI/RPCAPIChannel.hpp>
-#include <netsocket/netsocket.hpp>
+#include <RPCAPI/TCPRPCClientChannel.hpp>
 
 #include <thread>
 
@@ -37,8 +36,8 @@ using SecreteCode = RPCAPI::SecreteCode;
 int main(int argc, const char** argv)
 {
 	// Create and Establish a communication channel
-	ClientSocket socket;
-	if(!socket.connect())
+	RPCAPI::TCPRPCClientChannel socket;
+	if(!socket.connect("127.0.0.1", "2000"))
 	{
 		com_debug_log_error("Failed to connect to the server");
 		return -1;

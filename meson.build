@@ -52,7 +52,9 @@ project('RPCAPI', 'c', 'cpp',
 
 # Variables
 sources = [
-'source/RPCAPIServer.cpp'
+'source/RPCAPIServer.cpp',
+'source/TCPRPCServerChannel.cpp',
+'source/TCPRPCClientChannel.cpp'
 ]
 
 
@@ -86,12 +88,13 @@ lib_install_dir_bm_internal__ = get_option('libdir')/'rpcapi'
 
 # Dependencies
 dependencies_bm_internal__ = [
-dependency('common')
+dependency('common'),
+dependency('netsocket')
 ]
 
 # Linker Arguments
 windows_link_args_bm_internal__ = [ 
-
+'-lws2_32'
 ]
 linux_link_args_bm_internal__ = [
 
@@ -347,10 +350,10 @@ TestRPCAPIServer_include_dirs_bm_internal__ = [
 
 ]
 TestRPCAPIServer_dependencies_bm_internal__ = [
-dependency('netsocket')
+
 ]
 TestRPCAPIServer_link_args_bm_internal__ = {
-'windows' : ['-lws2_32'],
+'windows' : [],
 'linux' : [],
 'darwin' : []
 }
@@ -385,10 +388,10 @@ TestRPCAPIClient_include_dirs_bm_internal__ = [
 
 ]
 TestRPCAPIClient_dependencies_bm_internal__ = [
-dependency('netsocket')
+
 ]
 TestRPCAPIClient_link_args_bm_internal__ = {
-'windows' : ['-lws2_32'],
+'windows' : [],
 'linux' : [],
 'darwin' : []
 }

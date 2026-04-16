@@ -1,7 +1,8 @@
 {
     "project_name": "RPCAPI",
     "canonical_name": "rpcapi",
-    "dependencies" : [ "common" ],
+    "dependencies" : [ "common", "netsocket" ],
+    "windows_link_args" : [ "-lws2_32" ],
     "include_dirs": "include",
     "release_defines": [
         "-DRPCAPI_RELEASE"
@@ -37,9 +38,7 @@
         {
             "name" : "TestRPCAPIServer",
             "is_executable" : true,
-            "dependencies" : [ "netsocket" ],
             "link_with" : [ "rpcapi_static" ],
-            "windows_link_args" : [ "-lws2_32" ],
             "sources" : [
                 "source/main.network.server.cpp"
             ]
@@ -47,9 +46,7 @@
         {
             "name" : "TestRPCAPIClient",
             "is_executable" : true,
-            "dependencies" : [ "netsocket" ],
             "link_with" : [ "rpcapi_static" ],
-            "windows_link_args" : [ "-lws2_32" ],
             "sources" : [
                 "source/main.network.client.cpp"
             ]
@@ -58,7 +55,9 @@
     "vars" :
     {
         "sources" : [
-            "source/RPCAPIServer.cpp"
+            "source/RPCAPIServer.cpp",
+            "source/TCPRPCServerChannel.cpp",
+            "source/TCPRPCClientChannel.cpp"
         ]
     }
 }
