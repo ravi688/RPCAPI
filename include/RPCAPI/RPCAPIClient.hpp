@@ -2,10 +2,12 @@
 
 #include <RPCAPI/RPCAPIChannel.hpp>
 #include <RPCAPI/SerDes.hpp>
+#include <common/debug.h>
 
 #include <string_view>
 #include <vector>
 #include <optional>
+#include <stdexcept>
 
 namespace RPCAPI
 {
@@ -21,22 +23,38 @@ namespace RPCAPI
 		{
 			std::vector<u8> bytes;
 			SerializeArgs<ProcArgs...>(bytes, std::forward<ProcArgs>(args)...);
-			// com_debug_log_info("client: Sending call to %s", procName.data());
 			u32 procNameLen = static_cast<u32>(procName.size());
-			m_ch.send(reinterpret_cast<u8*>(&procNameLen), sizeof(u32));
-			m_ch.send(reinterpret_cast<const u8*>(procName.data()), procName.size());
+			if(!m_ch.send(reinterpret_cast<u8*>(&procNameLen), sizeof(u32)))
+				return { };
+			if(!m_ch.send(reinterpret_cast<const u8*>(procName.data()), procName.size()))
+				return { };
 			u32 argsLen = static_cast<u32>(bytes.size());
-			m_ch.send(reinterpret_cast<u8*>(&argsLen), sizeof(u32));
-			m_ch.send(bytes.data(), bytes.size());
-			// com_debug_log_info("client: Call to %s is sent", procName.data());
-			// com_debug_log_info("client: waiting for the return value");
+			if(!m_ch.send(reinterpret_cast<u8*>(&argsLen), sizeof(u32)))
+				return { };
+			if(!m_ch.send(bytes.data(), bytes.size()))
+				return { };
 			u32 retLen;
-			m_ch.receive(reinterpret_cast<u8*>(&retLen), sizeof(u32));
+			if(!m_ch.receive(reinterpret_cast<u8*>(&retLen), sizeof(u32)))
+				return { };
 			std::vector<u8> receiveBytes(retLen);
-			m_ch.receive(receiveBytes.data(), receiveBytes.size());
+			if(!m_ch.receive(receiveBytes.data(), receiveBytes.size()))
+				return { };
 			u32 offset = 0;
-			auto res = Deserialize<ReturnType>{} (receiveBytes.data(), offset);
-			return res;
+			try
+			{
+				auto res = Deserialize<ReturnType>{} (receiveBytes.data(), offset, receiveBytes.size());
+				return res;
+			}
+			catch(const std::exception& e)
+			{
+				com_debug_log_error("Caught: %s", e.what());
+				return { };
+			}
+			catch(...)
+			{
+				com_debug_log_error("Caught Unknown Exception");
+				return { };
+			}
 		}
 	};
 }

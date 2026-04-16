@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include <cstring> // for std::memcpy
+#include <stdexcept>
 
 namespace RPCAPI
 {
@@ -12,17 +13,34 @@ namespace RPCAPI
 	template<typename T>
 	struct Deserialize
 	{
-		T operator()(const u8* data, u32& offset);
+		T operator()(const u8* data, u32& offset, u32 length);
+	};
+
+	class IncrementOffsetOnExit
+	{
+	private:
+		u32& m_offset;
+		u32 m_size;
+	public:
+		IncrementOffsetOnExit(u32& offset, u32 size, u32 length) : m_offset(offset), m_size(size)
+		{
+			if((offset + size) > length)
+				throw std::runtime_error("Unsufficient bytes to deserialize");
+		}
+		~IncrementOffsetOnExit()
+		{
+			m_offset += m_size;
+		}
 	};
 
 	template<>
 	struct Deserialize<u32>
 	{
-		u32 operator()(const u8* data, u32& offset)
+		u32 operator()(const u8* data, u32& offset, u32 length)
 		{
+			IncrementOffsetOnExit _(offset, sizeof(u32), length);
 			u32 value;
 		    std::memcpy(&value, data + offset, sizeof(u32));
-		    offset += sizeof(u32);
 		    return value;
 		}
 	};
@@ -30,23 +48,23 @@ namespace RPCAPI
 	template<>
 	struct Deserialize<bool>
 	{
-		bool operator()(const u8* data, u32& offset)
+		bool operator()(const u8* data, u32& offset, u32 length)
 		{
+			IncrementOffsetOnExit _(offset, sizeof(u8), length);
 			u8 _bool;
 			std::memcpy(&_bool, data + offset, 1);
-			offset += 1;
 			return (_bool == 1) ? true : false;
-		}	
+		}
 	};
 
 	template<>
 	struct Deserialize<SecreteCode>
 	{
-		SecreteCode operator()(const u8* data, u32& offset)
+		SecreteCode operator()(const u8* data, u32& offset, u32 length)
 		{
+			IncrementOffsetOnExit _(offset, sizeof(SecreteCode), length);
 			SecreteCode code;
 			std::memcpy(&code[0], data + offset, sizeof(code));
-			offset += sizeof(code);
 			return code;
 		}
 	};
@@ -54,13 +72,13 @@ namespace RPCAPI
 	template<typename T>
 	struct Deserialize<std::vector<T>>
 	{
-		std::vector<T> operator()(const u8* data, u32& offset)
+		std::vector<T> operator()(const u8* data, u32& offset, u32 length)
 		{
-			u32 count = Deserialize<u32>{}(data, offset);
+			u32 count = Deserialize<u32>{}(data, offset, length);
 			std::vector<T> v;
 			v.reserve(count);
 			for(u32 i = 0; i < count; ++i)
-				v.push_back(Deserialize<T>{}(data, offset));
+				v.push_back(Deserialize<T>{}(data, offset, length));
 			return v;
 		}
 	};
@@ -70,7 +88,7 @@ namespace RPCAPI
 	{
 		u32 offset = 0;
 		return std::tuple<Args...>{
-			Deserialize<Args>{} (data, offset)...
+			Deserialize<Args>{} (data, offset, length)...
 		};
 	}
 
