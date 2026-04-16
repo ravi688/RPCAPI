@@ -30,12 +30,20 @@ class RPCAPIClient:
 		ret_bytes_len = bytearray(4)
 		if not self.channel.receive(ret_bytes_len, len(ret_bytes_len)):
 			return None
-		ret_len, _ = deserialize(ret_bytes_len, 0, u32)
+		try:
+			ret_len, _ = deserialize(ret_bytes_len, 0, u32)
+		except:
+			print('Exception caught, Failed to deserialize byte count for return value')
+			return None
 		# Receive the returned bytes
 		ret_bytes = bytearray(ret_len)
 		if not self.channel.receive(ret_bytes, ret_len):
 			return None
 		# Deserialize the returned bytes to reconstructed the returned object
 		offset : int = 0
-		ret_value, offset = deserialize(ret_bytes, offset, ret_type)
+		try:
+			ret_value, offset = deserialize(ret_bytes, offset, ret_type)
+		except:
+			print('Exception caught, Failed to deserialize return value')
+			return None
 		return ret_value
